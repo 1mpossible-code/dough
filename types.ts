@@ -20,3 +20,10 @@ export interface Record {
   Type: string;
   Balance: string;
 }
+
+export interface ChartData {
+  timespan: string;
+  totalIncome: number;
+  totalExpenses: number;
+  transactionCount: number;
+}
