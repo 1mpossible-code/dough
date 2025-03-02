@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
-import axios from "axios";
+import axiosInstance from "@/utils/axiosInstance";
 
 import {
   Card,
@@ -36,8 +36,8 @@ export function MonthlyBarChart() {
   ];
 
   useEffect(() => {
-    axios
-      .get("http://172.16.130.45:3000/api/v1/reports?period=monthly")
+    axiosInstance
+      .get("/api/v1/reports?period=monthly")
       .then((response) => {
         if (response.data && response.data.report) {
           const sortedData = response.data.report.sort(

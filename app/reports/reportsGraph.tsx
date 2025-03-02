@@ -17,14 +17,15 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import axiosInstance from "@/utils/axiosInstance";
 
 export default function ReportsGraph() {
   const [chartData, setChartData] = useState([]);
   const [timeRange, setTimeRange] = useState("yearly");
 
   useEffect(() => {
-    axios
-      .get(`http://172.16.130.45:3000/api/v1/reports?period=${timeRange}`)
+    axiosInstance
+      .get(`/api/v1/reports?period=${timeRange}`)
       .then((response) => {
         if (response.data && response.data.report) {
           setChartData(response.data.report);
