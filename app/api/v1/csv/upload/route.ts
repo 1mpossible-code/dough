@@ -1,29 +1,8 @@
 import { NextResponse } from "next/server";
 import db from "../../../../../lib/db";
 import { parse } from "csv-parse/sync";
+import { Details, Record, Transaction } from "../../../../../types";
 
-interface Transaction {
-  details: Details;
-  postingDate: string;
-  description: string;
-  amount: number;
-  type: string;
-  balance: number;
-}
-
-enum Details {
-  Debit,
-  Credit,
-}
-
-interface Record {
-  Details: string;
-  "Posting Date": string;
-  Description: string;
-  Amount: string;
-  Type: string;
-  Balance: string;
-}
 
 export async function POST(req: Request) {
   try {
@@ -56,7 +35,7 @@ export async function POST(req: Request) {
           : Details.Debit,
       postingDate: record["Posting Date"],
       description: record.Description,
-      amount: parseInt(record.Amount),
+      amount: Math.abs(parseInt(record.Amount)),
       type: record.Type,
       balance: parseFloat(record.Balance),
     }));
@@ -64,13 +43,13 @@ export async function POST(req: Request) {
     // Insert transactions into the database.
     const insertStmt = db.prepare(`
       INSERT OR IGNORE INTO transactions (details, postingDate, description, amount, type, balance)
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES (?, DATE(?), ?, ?, ?, ?)
     `);
     const insertMany = db.transaction((transactions: Transaction[]) => {
       for (const tx of transactions) {
         insertStmt.run(
           tx.details,
-          tx.postingDate,
+          new Date(tx.postingDate).toISOString(),
           tx.description,
           tx.amount,
           tx.type,
